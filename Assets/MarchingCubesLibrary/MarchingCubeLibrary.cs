@@ -17,24 +17,35 @@ public class MarchingCubeLibrary : MonoBehaviour
 {
     public List<March> marches;
     static public List<March> Marches;
-    
+
+    private void Awake()
+    {
+        Marches = marches;
+    }
+
     public static March GetMarch(uint reference)
     {
         return Marches[(int)reference];
+    }
 
-        /*
-         * Use only this part when the library is corrupted, it's gonna use the string references instead of binary index
-         * 
+    #region autoGeneration and fix Corruption
+
+    /*
+    //This whole part is probably not optimized, but I don't care, as it's helpers to re-build the Marching cube Library
+    //Should only be readable
+
+    public static March GetMarch(uint reference)
+    {
         uint referenceBack = reference;
-        string strRef = "";       
-       
+        string strRef = "";
+
         for (int i = 0; i < 8; ++i)
         {
-            if (i == 4) 
-                strRef = "-" + strRef;               
-           
-            string bit = ((reference & 1) == 1) ? "1" : "0";           
-            strRef = bit + strRef;           
+            if (i == 4)
+                strRef = "-" + strRef;
+
+            string bit = ((reference & 1) == 1) ? "1" : "0";
+            strRef = bit + strRef;
             reference = reference >> 1;
         }
         for (int i = 0; i < Marches.Count; ++i)
@@ -44,13 +55,11 @@ public class MarchingCubeLibrary : MonoBehaviour
                 if (referenceBack != i)
                     Debug.LogWarning("Marching Cube Library: item " + strRef + " at position " + i.ToString() + " when it should be " + referenceBack.ToString());
                 return Marches[i];
-            }            
+            }
 
         }
         Debug.LogError("Missing cube in marching cube library reference : " + strRef);
         return null;
-        */
-
     }
 
     public class Comp : IComparer<March>
@@ -61,18 +70,13 @@ public class MarchingCubeLibrary : MonoBehaviour
         }
     }
 
-    #region autoGeneration and fix Corruption
-
-    //This whole part is probably not optimized, but I don't care, as it's helpers to re-build the Marching cube Library
-    //Should only be readable
-
     private void GenerateNegatives() // if 11110000 exist, create its invert 00001111 
     {
         for (uint i = 0; i < 256; ++i)
         {
             if (GetMarch(i) == null && GetMarch((~i) % 256) != null)
             {
-             
+
                 March toCopy = GetMarch((~i) % 256);
                 March newMarch = new March();
                 newMarch.vertices = new List<Vector3>(toCopy.vertices);
@@ -94,14 +98,13 @@ public class MarchingCubeLibrary : MonoBehaviour
                     newMarch.tris.Add(toCopy.tris[j + 1]);
                 }
                 marches.Add(newMarch);
-              
+
             }
         }
-
     }
 
     //convert reference into list vector3 to allow transformations
-    private List<Vector3> ConvertReferenceToVectorList(uint reference) 
+    private List<Vector3> ConvertReferenceToVectorList(uint reference)
     {
         List<Vector3> result = new List<Vector3>();
 
@@ -124,9 +127,8 @@ public class MarchingCubeLibrary : MonoBehaviour
         return result;
     }
 
-
     //convert list vector3 into reference once transformation is done
-    private uint ConvertVectorListToReference(List<Vector3> list) 
+    private uint ConvertVectorListToReference(List<Vector3> list)
     {
         uint result = 0;
 
@@ -167,9 +169,9 @@ public class MarchingCubeLibrary : MonoBehaviour
         return result;
     }
 
-    void ComputeAndAddRotatedReference(uint reference,uint newRef, Quaternion q)
+    void ComputeAndAddRotatedReference(uint reference, uint newRef, Quaternion q)
     {
-        March toCopy =  GetMarch(reference);
+        March toCopy = GetMarch(reference);
         March newMarch = new March();
         newMarch.vertices = new List<Vector3>();
 
@@ -189,7 +191,7 @@ public class MarchingCubeLibrary : MonoBehaviour
         {
             if (i == 4)
                 newMarch.reference = "-" + newMarch.reference;
-            newMarch.reference = ((newRef & 1) == 1? "1" : "0") + newMarch.reference;
+            newMarch.reference = ((newRef & 1) == 1 ? "1" : "0") + newMarch.reference;
             newRef = newRef >> 1;
         }
         marches.Add(newMarch);
@@ -200,20 +202,20 @@ public class MarchingCubeLibrary : MonoBehaviour
         for (uint i = 0; i < 256; ++i)
         {
             if (GetMarch(i) != null)
-            {  
+            {
                 for (int x = 0; x < 4; x++)
                 {
                     uint refToRotate = Rotation(i, Quaternion.Euler(90 * x, 0, 0));
                     if (GetMarch(refToRotate) == null)
-                    {                       
-                        ComputeAndAddRotatedReference(i,refToRotate, Quaternion.Euler(90 * x, 0, 0));
+                    {
+                        ComputeAndAddRotatedReference(i, refToRotate, Quaternion.Euler(90 * x, 0, 0));
                     }
                     refToRotate = Rotation(i, Quaternion.Euler(0, 90 * x, 0));
                     if (GetMarch(refToRotate) == null)
                     {
                         ComputeAndAddRotatedReference(i, refToRotate, Quaternion.Euler(0, 90 * x, 0));
                     }
-                    refToRotate = Rotation(i, Quaternion.Euler(0,0, x*90));
+                    refToRotate = Rotation(i, Quaternion.Euler(0, 0, x * 90));
                     if (GetMarch(refToRotate) == null)
                     {
                         ComputeAndAddRotatedReference(i, refToRotate, Quaternion.Euler(0, 0, 90 * x));
@@ -223,21 +225,14 @@ public class MarchingCubeLibrary : MonoBehaviour
         }
     }
 
-
     //Call only to fix corrupted Marching cubes
     private void CheckAndCleanLibrary()
-    {      
+    {
         GenerateRotations();
         GenerateNegatives();
         marches.Sort(new Comp());
         PrefabUtility.SaveAsPrefabAsset(gameObject, "Assets/marchingCubeLibrary.prefab");
     }
-
-
+     */
     #endregion
-
-    private void Awake()
-    {
-        Marches = marches;
-    } 
 }
