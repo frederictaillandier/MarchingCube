@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using System.Linq;
 
 [System.Serializable]
 public class March
@@ -20,25 +21,29 @@ public class MarchingCubeLibrary : MonoBehaviour
 
     private void Awake()
     {
+        
         Marches = marches;
+        CheckAndCleanLibrary();
     }
-
+/*
     public static March GetMarch(uint reference)
     {
         return Marches[(int)reference];
     }
-
+*/
     #region autoGeneration and fix Corruption
 
-    /*
+
     //This whole part is probably not optimized, but I don't care, as it's helpers to re-build the Marching cube Library
     //Should only be readable
 
+    //Searching for the march looking by reference
     public static March GetMarch(uint reference)
     {
         uint referenceBack = reference;
         string strRef = "";
 
+       
         for (int i = 0; i < 8; ++i)
         {
             if (i == 4)
@@ -225,14 +230,175 @@ public class MarchingCubeLibrary : MonoBehaviour
         }
     }
 
+    private void GenerateSharpVertices()
+    {
+        Marches = marches;
+        if (GetMarch(0) == null)
+        {
+        Marches.Add(new March() {
+            reference = "0000-0000",
+            vertices = new List<Vector3>(),
+            tris = new List<int>()
+        });
+        }
+        
+        if (GetMarch(1) == null)
+        {
+        Marches.Add(new March() {
+            reference = "0000-0001",
+            vertices = new List<Vector3>() 
+            {
+                new Vector3(1,0.5f,1), 
+                new Vector3(0.5f,1,1), 
+                new Vector3(1,1,0.5f)
+            },
+            tris = new List<int>() {0,1,2}
+        });
+        }
+
+         if (GetMarch(3) == null)
+        {
+        Marches.Add(new March() {
+            reference = "0000-0011",
+            vertices = new List<Vector3>() 
+            {
+                new Vector3(0,0.5f,1), 
+                new Vector3(1,0.5f,1), 
+                new Vector3(1,1,0.5f),
+                new Vector3(0,1,0.5f),
+                new Vector3(0,0.5f,1),
+                new Vector3(1,1,0.5f), 
+            },
+            tris = new List<int>() {0,2,1,4,3,5}
+        });
+        }
+         if (GetMarch(6) == null)
+        {
+        Marches.Add(new March() {
+            reference = "0000-0110",
+            vertices = new List<Vector3>() 
+            {
+                new Vector3(1,1,0.5f), 
+                new Vector3(1,0.5f,0), 
+                new Vector3(0.5f,1,0),
+                new Vector3(0,1,0.5f),
+                new Vector3(0,0.5f,1),
+                new Vector3(0.5f,1,0), 
+            },
+            tris = new List<int>() {0,2,1,3,5,4}
+        });
+        }
+        if (GetMarch(7) == null)
+        {
+        Marches.Add(new March() {
+            reference = "0000-0111",
+            vertices = new List<Vector3>() 
+            {
+                new Vector3(0.5f,1,0), 
+                new Vector3(0,1,0.5f), 
+                new Vector3(0,0.5f,1),
+                new Vector3(1,0.5f,1),
+                new Vector3(1,0.5f,0),
+                new Vector3(1,0.5f,0),                
+                new Vector3(1,0.5f,0),
+                new Vector3(0,0.5f,1),
+                new Vector3(0,1,0.5f),
+            },
+            tris = new List<int>() {0,4,1,5,3,2,6,7,8}
+        });
+        }
+        if (GetMarch(15) == null)
+        {
+        Marches.Add(new March() {
+            reference = "0000-1111",
+            vertices = new List<Vector3>() 
+            {
+                new Vector3(0,0.5f,0), 
+                new Vector3(1,0.5f,0), 
+                new Vector3(1,0.5f,1),
+                new Vector3(0,0.5f,1),
+                new Vector3(0,0.5f,0),
+                new Vector3(1,0.5f,1),
+            },
+            tris = new List<int>() {0,1,2,4,5,3}
+        });
+        }
+        
+        if (GetMarch(113) == null)
+        {
+        Marches.Add(new March() {
+            reference = "0111-0001",
+            vertices = new List<Vector3>() 
+            {
+                new Vector3(0.5f,1,1), 
+                new Vector3(1,1,0.5f), 
+                new Vector3(1,0.5f,0),
+                new Vector3(0.5f,0,0),
+                new Vector3(0,0,0.5f),
+                new Vector3(0,0.5f,1),
+                new Vector3(0,0.5f,1),
+                new Vector3(1,1,0.5f),
+                new Vector3(1,1,0.5f), 
+                new Vector3(0,0,0.5f),
+                new Vector3(1,0.5f,0),
+                new Vector3(0,0,0.5f),
+            },
+            tris = new List<int>() {0,1,5,6,7,4,8,2,9,10,3,11}
+        });
+        }
+        
+        if (GetMarch(177) == null)
+        {
+        Marches.Add(new March() {
+            reference = "1011-0001",
+            vertices = new List<Vector3>() 
+            {
+                new Vector3(0.5f,1,1), 
+                new Vector3(1,1,0.5f),
+                new Vector3(1,0,0.5f),
+                new Vector3(0.5f,0,0),
+                new Vector3(0,0.5f,0),
+                new Vector3(0,0.5f,1),
+
+                new Vector3(1,1,0.5f),
+                new Vector3(0.5f,0,0),
+                new Vector3(0,0.5f,1),
+                 new Vector3(0.5f,0,0),
+                  new Vector3(1,1,0.5f),
+                  new Vector3(0,0.5f,1),
+   
+            },
+            tris = new List<int>() {1,3,5,6,2,7,8,9,4,0,10,11}
+        });
+        }
+
+
+        marches = Marches;
+        Debug.Log("refs = " + marches.Count());
+    }
+
+    private void CheckMissingMarches()
+    {
+        Debug.Log("Final Marching Cube Library Check");
+        for (uint i = 0; i < 256; ++i)
+        {
+            if (GetMarch(i) != null)
+                return; 
+        }
+    }
+
+
     //Call only to fix corrupted Marching cubes
     private void CheckAndCleanLibrary()
     {
+        GenerateSharpVertices();
         GenerateRotations();
         GenerateNegatives();
+        marches = Marches;
         marches.Sort(new Comp());
-        PrefabUtility.SaveAsPrefabAsset(gameObject, "Assets/marchingCubeLibrary.prefab");
+        CheckMissingMarches();
+        PrefabUtility.SaveAsPrefabAsset(gameObject, "Assets/marchingCubeLibrarySharp.prefab");
     }
-     */
+   
     #endregion
 }

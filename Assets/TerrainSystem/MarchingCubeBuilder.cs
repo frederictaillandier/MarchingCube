@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -18,7 +18,7 @@ class MarchingCubeBuilder
         MarchingCubeBuilder builder = new MarchingCubeBuilder(octoTree);
         builder.FillShellIntersections(octoTree.Root);
         builder.DetectIntersections(octoTree.Root);
-        return builder.BuildMesh();
+        return builder.BuildMeshSharp();
     }
 
     private uint InspectIntersection(Vector3 pos)
@@ -146,6 +146,49 @@ class MarchingCubeBuilder
         }
     }
 
+
+    private GameObject BuildMeshSharp()
+    {
+
+        var vertices = new List<Vector3>();
+        var triangles = new List<int>();
+        int indexStart = 0;
+
+        foreach (var intersect in _intersectionsToCompute)
+        {
+            var march = MarchingCubeLibrary.GetMarch(intersect.Value);
+
+            if (march != null)
+            {    
+                foreach (var vertice in march.vertices)
+                {
+                    vertices.Add(vertice + intersect.Key);
+                }
+                foreach (var triangle in march.tris)
+                {
+                    triangles.Add(triangle + indexStart);
+                }
+                indexStart = vertices.Count();
+
+            }
+        }
+
+
+        GameObject terrain = new GameObject("Terrain");
+        MeshRenderer meshRenderer = terrain.AddComponent<MeshRenderer>();
+        meshRenderer.sharedMaterial = new Material(Shader.Find("Standard"));
+
+        MeshFilter meshFilter = terrain.AddComponent<MeshFilter>();
+
+        Mesh mesh = new Mesh();
+
+        mesh.vertices = vertices.ToArray();
+        mesh.triangles = triangles.ToArray();
+        mesh.RecalculateNormals();
+        meshFilter.mesh = mesh;
+        return terrain;
+    }
+
     private GameObject BuildMesh()
     {
         // Reversed List (values as indexes and indexes as value to use the hashmap)
@@ -170,10 +213,12 @@ class MarchingCubeBuilder
                         verticeGlobalIndex = verticesAndRefs.Count;
                         verticesAndRefs.Add(march.vertices[i] + intersect.Key, verticeGlobalIndex);
                     }
+
                     else
                     {
                         verticeGlobalIndex = verticesAndRefs[march.vertices[i] + intersect.Key];
                     }
+
                     indexTranslator[i] = verticeGlobalIndex;
                 }
                 for (int i = 0; i < march.tris.Count; ++i)
