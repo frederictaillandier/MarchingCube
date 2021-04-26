@@ -7,6 +7,19 @@ public class CameraMove : MonoBehaviour
     public float cameraSpeed = 2;
     Vector3 _input;
 
+    public Vector3 CameraTarget
+    {
+        get
+        {
+            return _input;
+        }
+        set
+        {
+            _input = value;
+        }
+
+    }
+
     void OnGUI()
     {
         if (Event.current.type == EventType.KeyDown)

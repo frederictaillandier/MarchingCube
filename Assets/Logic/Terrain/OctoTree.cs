@@ -113,31 +113,6 @@ class OctoNode<T>
             _children = null;
         }
     }
-
-    /* EXPERIMENTAL TO DELETE
-    Use to debug
-    public void Show(T val)
-    {
-        if (_children == null && _value.Equals(val))
-        {
-            if (TerrainManager.cubeDrawer == null)
-                TerrainManager.cubeDrawer = new GameObject("cubeDrawer");
-            var g = GameObject.Instantiate(TerrainManager.prefab);
-            g.transform.position = _position;
-            g.transform.localScale *= _size;
-            g.transform.name = string.Format("{0}{1}{2}", _position.x, _position.y, _position.z);
-            g.transform.parent = TerrainManager.cubeDrawer.transform;
-        }
-        else if (_children != null)
-        {
-            for (int i = 0; i < _children.Count; ++i)
-            {
-                _children[i].Show(val);
-            }
-        }
-    }
-    END EXPERIMENTAL TO DELETE */
-
 }
 
 class OctoTree<T>

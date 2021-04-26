@@ -149,6 +149,8 @@ class MarchingCubeBuilder
 
     private GameObject BuildMeshSharp()
     {
+        var layeredVertices = new Dictionary<int, List<Vector3>>();
+        var layeredTriangles = new Dictionary<int, List<int>>();
 
         var vertices = new List<Vector3>();
         var triangles = new List<int>();
@@ -157,38 +159,49 @@ class MarchingCubeBuilder
         foreach (var intersect in _intersectionsToCompute)
         {
             var march = MarchingCubeLibrary.GetMarch(intersect.Value);
+            var layerHeight = (int)intersect.Key.y;
 
             if (march != null)
-            {    
+            {
+                if (!layeredVertices.ContainsKey(layerHeight) || layeredVertices[layerHeight] == null)
+                {
+                    layeredVertices[layerHeight] = new List<Vector3>();
+                    layeredTriangles[layerHeight] = new List<int>();
+                }                
+                var layeredIndexStart = layeredVertices[layerHeight].Count();
                 foreach (var vertice in march.vertices)
                 {
-                    vertices.Add(vertice + intersect.Key);
+                    layeredVertices[layerHeight].Add(vertice + intersect.Key);
                 }
                 foreach (var triangle in march.tris)
                 {
-                    triangles.Add(triangle + indexStart);
+                    layeredTriangles[layerHeight].Add(triangle + layeredIndexStart);
                 }
-                indexStart = vertices.Count();
 
             }
         }
-
-
         GameObject terrain = new GameObject("Terrain");
-        MeshRenderer meshRenderer = terrain.AddComponent<MeshRenderer>();
-        meshRenderer.sharedMaterial = new Material(Shader.Find("Standard"));
+        var terrains = new Dictionary<int, GameObject>();
 
-        MeshFilter meshFilter = terrain.AddComponent<MeshFilter>();
+        foreach (var verticesLayer in layeredVertices)
+        {
+            var heightNumber = verticesLayer.Key;
+            terrains[heightNumber] = new GameObject(heightNumber.ToString());
+            MeshRenderer layeredMeshRenderer = terrains[heightNumber].AddComponent<MeshRenderer>();
+            layeredMeshRenderer.sharedMaterial = new Material(Shader.Find("Standard"));
+            MeshFilter layeredMeshFilter = terrains[heightNumber].AddComponent<MeshFilter>();
+            Mesh layerMesh = new Mesh();
+            layerMesh.vertices = verticesLayer.Value.ToArray();
+            layerMesh.triangles = layeredTriangles[heightNumber].ToArray();
+            layerMesh.RecalculateNormals();
+            layeredMeshFilter.mesh = layerMesh;
+            terrains[heightNumber].transform.parent = terrain.transform;
+        }
 
-        Mesh mesh = new Mesh();
-
-        mesh.vertices = vertices.ToArray();
-        mesh.triangles = triangles.ToArray();
-        mesh.RecalculateNormals();
-        meshFilter.mesh = mesh;
         return terrain;
     }
 
+    /* Keep as a reference for smooth mesh Building 
     private GameObject BuildMesh()
     {
         // Reversed List (values as indexes and indexes as value to use the hashmap)
@@ -213,7 +226,6 @@ class MarchingCubeBuilder
                         verticeGlobalIndex = verticesAndRefs.Count;
                         verticesAndRefs.Add(march.vertices[i] + intersect.Key, verticeGlobalIndex);
                     }
-
                     else
                     {
                         verticeGlobalIndex = verticesAndRefs[march.vertices[i] + intersect.Key];
@@ -226,8 +238,6 @@ class MarchingCubeBuilder
                     triangles.Add(indexTranslator[march.tris[i]]);
                 }
             }
-
-
         }
         GameObject terrain = new GameObject("Terrain");
         MeshRenderer meshRenderer = terrain.AddComponent<MeshRenderer>();
@@ -243,4 +253,5 @@ class MarchingCubeBuilder
         meshFilter.mesh = mesh;
         return terrain;
     }
+    */
 }
