@@ -10,11 +10,11 @@ public abstract class Observable
     protected Vector3 _position;
     protected abstract string GetObserverPath();
 
-    public void Initialize(Observer ObserverTemplate)
+    public void Initialize()
     {
         if (_observer == null)
         {
-            _observer = Observer.Instantiate<UnitObserver>(GetObserverPath());
+            _observer = Observer.Instantiate<Observer>(GetObserverPath());
             _observer.Subscribe(this);
         }
     }

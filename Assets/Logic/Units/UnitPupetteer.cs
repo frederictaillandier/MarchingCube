@@ -12,7 +12,7 @@ public class UnitPupetteer : MonoBehaviour
     public void Start()
     {
         _unit = new Unit();
-        _unit.Initialize(UnitObserverTemplate);
+        _unit.Initialize();
         InvokeRepeating("Tick", 1f, 1f);
     }
 
