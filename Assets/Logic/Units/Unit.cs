@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Unit : Observable
 {
+    List<Vector3> path = null;
+    Vector3 _nextStep;
+
     protected override string GetObserverPath()
     {
         return "ObserverPrefabs/UnitObserver";
@@ -11,39 +14,63 @@ public class Unit : Observable
 
     private void UpdatePosition()
     {
-        if (TerrainManager.GetInstance().GetValue(_position + Vector3.down) == 0)
-        {
-            _position += Vector3.down;
-            return;
-        }
-        if (TerrainManager.GetInstance().GetValue(_position) == 1)
-        {
-            _position += Vector3.up;
-            return;
-        }
-
-        var newDirectionList = new List<Vector3>();
-        for (int x = -1; x <= 1; ++x)
-        {
-            for (int y = -1; y <= 1; ++y)
-            {
-                for (int z = -1; z <= 1; ++z)
-                {
-                    var newDirection = new Vector3(x, y, z);
-                    if (!TerrainManager.GetInstance().IsOutsideMap(_position + newDirection) &&
-                        MovementManager.GetInstance().GetSegmentDistance(_position, _position + newDirection) > 0)
-                    {
-                        newDirectionList.Add(newDirection);    
-                    }
-                }
-            }
-        }
-        this._position += newDirectionList[Random.Range(0,newDirectionList.Count)];
+        if (Kill()) { }
+        else if (Fall()) { }
+        else if (Walk()) { }
         Observe();
     }
 
+    private bool Fall()
+    {
+        if (TerrainManager.GetInstance().GetValue(_position + (Vector3.one/2) + Vector3.down) == 0)
+        {
+            _position += Vector3.down;
+            return true;
+        }
+        return false;
+    }
+
+    private bool Kill()
+    {
+        if (TerrainManager.GetInstance().GetValue(_position + (Vector3.one/2)) == 1)
+        {
+            _position += Vector3.up;
+            return true;
+        }
+        return false;
+    }
+
+    private bool Walk()
+    {
+        if (path == null || path.Count == 0)
+        {
+            path = AStar.Run(_position, new Vector3((int)Random.Range(0, Constants.TERRAIN_SIZE), 2, (int)Random.Range(0, Constants.TERRAIN_SIZE)));
+            _nextStep = path[0];
+            path.RemoveAt(0);
+
+        }
+        if (path != null && path.Count > 0)
+        {
+            var deltaTime = Time.deltaTime;
+            var deltaStep = Vector3.Distance(_nextStep, _position);
+
+            if (deltaStep > deltaTime)
+            {
+                _position = _position + (_nextStep - _position).normalized * deltaTime;
+            }
+            else
+            {
+                _position = _nextStep;
+                _nextStep = path[0];
+                path.RemoveAt(0);
+            }
+            return true;
+        }
+        return false;
+    }
+
     public void Tick()
-    {        
+    {
         UpdatePosition();
     }
 }

@@ -13,12 +13,10 @@ public class UnitPupetteer : MonoBehaviour
     {
         _unit = new Unit();
         _unit.Initialize();
-        
-        InvokeRepeating("Tick", 1f, 1f);
     }
 
     // Update is called once per frame
-    void Tick()
+    void Update()
     {
         _unit.Tick();
     }

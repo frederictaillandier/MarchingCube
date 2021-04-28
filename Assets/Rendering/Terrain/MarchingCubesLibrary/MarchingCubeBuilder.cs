@@ -139,7 +139,6 @@ class MarchingCubeBuilder
 
     private void DetectIntersections(OctoNode<int> octoNode)
     {
-        Debug.Log("Detect Intersections" + octoNode.Size);
         FillNodeIntersections(octoNode);
         if (octoNode.Children != null && octoNode.Size > 2)
         {     
@@ -158,7 +157,6 @@ class MarchingCubeBuilder
 
         var vertices = new List<Vector3>();
         var triangles = new List<int>();
-        int indexStart = 0;
 
         foreach (var intersect in _intersectionsToCompute)
         {
