@@ -697,8 +697,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89e14493bf986ef4abfe958cee27cf9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UnitObserverTemplate: {fileID: 3561086326112774885, guid: d0e5ca092225335e3a879bc840fd2888,
-    type: 3}
 --- !u!4 &1351789244 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1672816472, guid: 8c24753e9eb7fa9a3ae3f7283e536801,
@@ -772,6 +770,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1843523481}
   - component: {fileID: 1843523482}
+  - component: {fileID: 1843523480}
   m_Layer: 0
   m_Name: System
   m_TagString: Untagged
@@ -779,6 +778,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1843523480
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1843523479}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b3950026a7f28841bbddc08a11c5890, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1843523481
 Transform:
   m_ObjectHideFlags: 0

@@ -12,6 +12,7 @@ public abstract class Observable
 
     public void Initialize()
     {
+        _position = new Vector3(2,2,2);
         if (_observer == null)
         {
             _observer = Observer.Instantiate<Observer>(GetObserverPath());

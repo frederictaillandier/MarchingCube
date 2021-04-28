@@ -2,14 +2,26 @@
 
 public class TerrainManager : MonoBehaviour
 {
-    public static GameObject prefab = null;
-    public static GameObject cubeDrawer = null;
-    public static GameObject sphereDrawer = null;
+    static TerrainManager _instance = null;
+
+    public static TerrainManager GetInstance()
+    {
+        return _instance;
+    }
+
+    void Awake() 
+    {
+        _instance = this;
+    }
+
     OctoTree<int> _terrain;
 
     #region Test_And_Debug
     void CustomTerrainGenerationForTest()
     {
+        _terrain.SetValue(new Vector3(0,2, 0), 1);
+
+
         _terrain.SetValue(new Vector3(10, 5, 10), 1);
         _terrain.SetValue(new Vector3(11, 5, 10), 0);
         _terrain.SetValue(new Vector3(10, 5, 11), 1);
@@ -38,12 +50,26 @@ public class TerrainManager : MonoBehaviour
             _terrain.SetValue(center2 + new Vector3(x, 0, 1), 0);
             _terrain.SetValue(center2 + new Vector3(x, 0, 0), 0);
         }
-
-
     }
 
-
     #endregion
+
+    public bool IsOutsideMap(Vector3 pos)
+    {
+        if (pos.x < 0 
+            || pos.x >= Constants.TERRAIN_SIZE
+            || pos.z < 0 
+            || pos.z >= Constants.TERRAIN_SIZE)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public int GetValue(Vector3 pos) 
+    {
+        return _terrain.GetValue(pos);
+    }
 
     void Start()
     {

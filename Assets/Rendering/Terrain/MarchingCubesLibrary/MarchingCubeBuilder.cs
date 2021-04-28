@@ -25,23 +25,24 @@ class MarchingCubeBuilder
     {
         uint value = 0;
 
-        if (_octoTree.GetValue(pos + new Vector3(+0, +0, +0)) == 1) // right - up - back
+        if (_octoTree.GetValue(pos + new Vector3(1, 1, 1)) == 1) // right - up - back
             value = (value | (1 << 0));
-        if (_octoTree.GetValue(pos + new Vector3(-1, +0, +0)) == 1) // left - up - back
+        if (_octoTree.GetValue(pos + new Vector3(0, 1, 1)) == 1) // left - up - back
             value = (value | (1 << 1));
-        if (_octoTree.GetValue(pos + new Vector3(+0, +0, -1)) == 1) // right - up - front
+        if (_octoTree.GetValue(pos + new Vector3(1, 1, 0)) == 1) // right - up - front
             value = (value | (1 << 2));
-        if (_octoTree.GetValue(pos + new Vector3(-1, +0, -1)) == 1)
+        if (_octoTree.GetValue(pos + new Vector3(0, 1, 0)) == 1)
             value = (value | (1 << 3));
-        if (_octoTree.GetValue(pos + new Vector3(+0, -1, +0)) == 1)
+        if (_octoTree.GetValue(pos + new Vector3(1, 0, 1)) == 1)
             value = (value | (1 << 4));
-        if (_octoTree.GetValue(pos + new Vector3(-1, -1, +0)) == 1)
+        if (_octoTree.GetValue(pos + new Vector3(0, 0, 1)) == 1)
             value = (value | (1 << 5));
-        if (_octoTree.GetValue(pos + new Vector3(+0, -1, -1)) == 1)
+        if (_octoTree.GetValue(pos + new Vector3(1, 0, 0)) == 1)
             value = (value | (1 << 6));
-        if (_octoTree.GetValue(pos + new Vector3(-1, -1, -1)) == 1)
+        if (_octoTree.GetValue(pos + new Vector3(0, 0, 0)) == 1)
             value = (value | (1 << 7));
         return value;
+
     }
 
     private void FillShellIntersections(OctoNode<int> node)
@@ -54,10 +55,10 @@ class MarchingCubeBuilder
                 uint val = InspectIntersection(node.Position + new Vector3(i, j, 0));
                 if (val != 0 && val != 255)
                     _intersectionsToCompute.Add(node.Position + new Vector3(i, j, 0), val);
-                //Back
-                val = InspectIntersection(node.Position + new Vector3(i, j, node.Size));
+                /*//Back
+                val = InspectIntersection(node.Position + new Vector3(i, j, node.Size -1));
                 if (val != 0 && val != 255)
-                    _intersectionsToCompute.Add(node.Position + new Vector3(i, j, node.Size), val);
+                    _intersectionsToCompute.Add(node.Position + new Vector3(i, j, node.Size -1), val);*/
 
 
                 if (j != 0 && j != node.Size) //Do not recompute the edges
@@ -66,10 +67,10 @@ class MarchingCubeBuilder
                     val = InspectIntersection(node.Position + new Vector3(0, i, j));
                     if (val != 0 && val != 255)
                         _intersectionsToCompute.Add(node.Position + new Vector3(0, i, j), val);
-                    //Right
-                    val = InspectIntersection(node.Position + new Vector3(node.Size, i, j));
+                    /*//Right
+                    val = InspectIntersection(node.Position + new Vector3(node.Size -1, i, j));
                     if (val != 0 && val != 255)
-                        _intersectionsToCompute.Add(node.Position + new Vector3(node.Size, i, j), val);
+                        _intersectionsToCompute.Add(node.Position + new Vector3(node.Size -1, i, j), val);*/
                 }
 
                 if (j != 0 && j != node.Size && i != node.Size && i != 0) //Do not recompute the edges
@@ -78,17 +79,17 @@ class MarchingCubeBuilder
                     val = InspectIntersection(node.Position + new Vector3(i, 0, j));
                     if (val != 0 && val != 255)
                         _intersectionsToCompute.Add(node.Position + new Vector3(i, 0, j), val);
-                    //Top
-                    val = InspectIntersection(node.Position + new Vector3(i, node.Size, j));
+                    /*//Top
+                    val = InspectIntersection(node.Position + new Vector3(i, node.Size -1, j));
                     if (val != 0 && val != 255)
-                        _intersectionsToCompute.Add(node.Position + new Vector3(i, node.Size, j), val);
+                        _intersectionsToCompute.Add(node.Position + new Vector3(i, node.Size -1, j), val);*/
                 }
             }
         }
     }
 
     private void FillNodeIntersections(OctoNode<int> node)
-    {
+    {        
         uint val = 0;
 
         for (int i = 1; i < node.Size; ++i)
@@ -100,19 +101,21 @@ class MarchingCubeBuilder
                     if (j != node.Size / 2)
                     {
                         //x Face
-                        val = InspectIntersection(node.Position + new Vector3(node.Size / 2, i, j));
+                        var key = node.Position + new Vector3(node.Size / 2, i, j);
+                        val = InspectIntersection(key);
                         if (val != 0 && val != 255)
-                            _intersectionsToCompute.Add(node.Position + new Vector3(node.Size / 2, i, j), val);
+                            _intersectionsToCompute.Add(key, val);
                         //y Face
-                        val = InspectIntersection(node.Position + new Vector3(i, node.Size / 2, j));
+                        key = node.Position + new Vector3(i, node.Size / 2, j);
+                        val = InspectIntersection(key);
                         if (val != 0 && val != 255)
-                            _intersectionsToCompute.Add(node.Position + new Vector3(i, node.Size / 2, j), val);
+                            _intersectionsToCompute.Add(key, val);
                         //z Face
-                        val = InspectIntersection(node.Position + new Vector3(i, j, node.Size / 2));
+                        key = node.Position + new Vector3(i, j, node.Size / 2);
+                        val = InspectIntersection(key);
                         if (val != 0 && val != 255)
-                            _intersectionsToCompute.Add(node.Position + new Vector3(i, j, node.Size / 2), val);
+                            _intersectionsToCompute.Add(key, val);
                     }
-
                 }
                 //x Segment
                 val = InspectIntersection(node.Position + new Vector3(i, node.Size / 2, node.Size / 2));
@@ -136,11 +139,12 @@ class MarchingCubeBuilder
 
     private void DetectIntersections(OctoNode<int> octoNode)
     {
-        if (octoNode.Children != null)
-        {
-            FillNodeIntersections(octoNode);
+        Debug.Log("Detect Intersections" + octoNode.Size);
+        FillNodeIntersections(octoNode);
+        if (octoNode.Children != null && octoNode.Size > 2)
+        {     
             for (int i = 0; i < 8; ++i)
-            {
+            {                
                 DetectIntersections(octoNode.Children[i]);
             }
         }
