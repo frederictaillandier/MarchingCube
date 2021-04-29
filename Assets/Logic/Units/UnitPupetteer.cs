@@ -13,6 +13,7 @@ public class UnitPupetteer : MonoBehaviour
     {
         _unit = new Unit();
         _unit.Initialize();
+        _unit.Position = new Vector3(2,2,2);
     }
 
     // Update is called once per frame

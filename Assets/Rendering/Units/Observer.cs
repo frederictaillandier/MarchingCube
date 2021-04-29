@@ -11,14 +11,13 @@ public abstract class Observer : MonoBehaviour
         return obj.GetComponent<T>();
     }
 
-
-    public void Subscribe(Observable observed) 
+    public virtual void Subscribe(Observable observed) 
     {
-        observed.SubscribeOnPositionUpdate(OnObservedMove);
+        observed.SubscribeObservableEvent(ObservableEventType.POSITION_UPDATE, OnPositionUpdate);
     }
 
-    void OnObservedMove(Vector3 pos) 
+    public void OnPositionUpdate(System.EventArgs args)
     {
-       this.transform.position = pos;
+        transform.position = (args as PositionUpdateArgs).Position;
     }
 }
