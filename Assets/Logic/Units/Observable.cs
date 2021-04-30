@@ -4,7 +4,8 @@ using UnityEngine;
 
 public enum ObservableEventType
 {
-    POSITION_UPDATE
+    POSITION_UPDATE, 
+    DESTINATION_REACHED
 }
 
 public abstract class Observable
@@ -15,7 +16,7 @@ public abstract class Observable
     private Observer _observer = null;
     protected abstract string GetObserverPath();
 
-    public void Initialize()
+    public virtual void Initialize()
     {
         if (_observer == null)
         {
@@ -51,7 +52,12 @@ public abstract class Observable
 
 #endregion // POSITION
 #region Events
-
+    public void InvokeObservableEvent(ObservableEventType type, System.EventArgs args)
+    {
+        if (_observableEvents.ContainsKey(type))
+            _observableEvents[type].Invoke(args);
+    }
+    
     public void SubscribeObservableEvent(ObservableEventType type, ObservableEvent function) 
     {
         if (!_observableEvents.ContainsKey(type))

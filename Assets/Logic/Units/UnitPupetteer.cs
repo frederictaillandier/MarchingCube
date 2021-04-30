@@ -13,7 +13,9 @@ public class UnitPupetteer : MonoBehaviour
     {
         _unit = new Unit();
         _unit.Initialize();
+        _unit.SubscribeObservableEvent(ObservableEventType.DESTINATION_REACHED, OnDestinationReached);
         _unit.Position = new Vector3(2,2,2);
+        ForceNewTarget();
     }
 
     // Update is called once per frame
@@ -21,4 +23,15 @@ public class UnitPupetteer : MonoBehaviour
     {
         _unit.Tick();
     }
+
+    void OnDestinationReached(System.EventArgs args)
+    {
+        ForceNewTarget();
+    }
+
+    void ForceNewTarget()
+    {
+        while (!_unit.MoveTo(new Vector3((int)Random.Range(0, Constants.TERRAIN_SIZE), 2, (int)Random.Range(0, Constants.TERRAIN_SIZE)))) {}
+    }
+
 }

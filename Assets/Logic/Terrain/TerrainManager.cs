@@ -12,6 +12,19 @@ public class TerrainManager : MonoBehaviour
     void Awake() 
     {
         _instance = this;
+        //Dummy Initialize
+        _terrain = new OctoTree<int>(0, Constants.TERRAIN_SIZE);
+        for (int i = 0; i < Constants.TERRAIN_SIZE * Constants.TERRAIN_SIZE; ++i)
+        {
+            _terrain.SetValue(new Vector3(i / Constants.TERRAIN_SIZE, 0, i % Constants.TERRAIN_SIZE), 1);
+            _terrain.SetValue(new Vector3(i / Constants.TERRAIN_SIZE, 1, i % Constants.TERRAIN_SIZE), 1);
+        }
+
+        //Only for testing
+        CustomTerrainGenerationForTest();
+        //Build Terrain
+        MarchingCubeBuilder.Build(_terrain);
+
     }
 
     OctoTree<int> _terrain;
@@ -69,21 +82,5 @@ public class TerrainManager : MonoBehaviour
     public int GetValue(Vector3 pos) 
     {
         return _terrain.GetValue(pos);
-    }
-
-    void Start()
-    {
-        //Dummy Initialize
-        _terrain = new OctoTree<int>(0, Constants.TERRAIN_SIZE);
-        for (int i = 0; i < Constants.TERRAIN_SIZE * Constants.TERRAIN_SIZE; ++i)
-        {
-            _terrain.SetValue(new Vector3(i / Constants.TERRAIN_SIZE, 0, i % Constants.TERRAIN_SIZE), 1);
-            _terrain.SetValue(new Vector3(i / Constants.TERRAIN_SIZE, 1, i % Constants.TERRAIN_SIZE), 1);
-        }
-
-        //Only for testing
-        CustomTerrainGenerationForTest();
-        //Build Terrain
-        MarchingCubeBuilder.Build(_terrain);
     }
 }

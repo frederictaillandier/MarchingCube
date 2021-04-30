@@ -4,10 +4,19 @@ using UnityEngine;
 
 public class Unit : Observable
 {
-    List<Vector3> path = null;
+    List<Vector3> _path = null;
     Vector3 _nextStep;
 
-    public void Initialize()
+    public bool MoveTo(Vector3 target)
+    {
+        _path = AStar.Run(Position, target);
+        _nextStep = Position;
+        if (_path == null)
+            return false;
+        return true;
+    }
+
+    public override void Initialize()
     {
         base.Initialize();
     }
@@ -22,7 +31,6 @@ public class Unit : Observable
         if (Kill()) { }
         else if (Fall()) { }
         else if (Walk()) { }
-        ObservePosition();
     }
 
     private bool Fall()
@@ -47,16 +55,7 @@ public class Unit : Observable
 
     private bool Walk()
     {
-        if (path == null || path.Count == 0)
-        {
-            path = AStar.Run(Position, new Vector3((int)Random.Range(0, Constants.TERRAIN_SIZE), 2, (int)Random.Range(0, Constants.TERRAIN_SIZE)));
-            if (path != null && path.Count > 0)
-            {
-                _nextStep = path[0];
-                path.RemoveAt(0);
-            }
-        }
-        if (path != null && path.Count > 0)
+        if (_nextStep != Position || (_path != null && _path.Count > 0))
         {
             var deltaTime = Time.deltaTime;
             var deltaStep = Vector3.Distance(_nextStep, Position);
@@ -68,8 +67,17 @@ public class Unit : Observable
             else
             {
                 Position = _nextStep;
-                _nextStep = path[0];
-                path.RemoveAt(0);
+                if (_path != null && _path.Count > 0)
+                {
+                    _nextStep = _path[0];
+                    _path.RemoveAt(0);
+                    deltaTime -= deltaStep;
+                    Position = Position + (_nextStep - Position).normalized * deltaTime;
+                }
+                else
+                {
+                    InvokeObservableEvent(ObservableEventType.DESTINATION_REACHED, new System.EventArgs());
+                }
             }
             return true;
         }

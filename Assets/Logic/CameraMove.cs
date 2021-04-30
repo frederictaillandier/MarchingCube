@@ -59,7 +59,7 @@ public class CameraMove : MonoBehaviour
             }
         }
         if (Event.current.type == EventType.ScrollWheel)
-            _input.y = Event.current.delta.y;
+            _input.y = -Event.current.delta.y;
         else
             _input.y = 0;
     }
